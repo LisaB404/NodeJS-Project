@@ -1,0 +1,21 @@
+{
+  "name": "nodejs-project",
+  "version": "1.0.0",
+  "description": "NodeJS Education project. API JSON RESTful to manage courses.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "keywords": [
+    "node",
+    "api",
+    "json",
+    "nodemon"
+  ],
+  "author": "Lisa B.",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9"
+  }
+}
