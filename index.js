@@ -5,6 +5,7 @@ const Course = require('./models/courseModel');
 const University = require('./models/universityModel');
 
 const courseRoutes = require('./routes/courseRoutes');
+const typologyRoutes = require('./routes/typologyRoutes');
 
 require('dotenv').config();
 
@@ -17,32 +18,10 @@ app.use(express.json()); //allow to use json
 
 //Routes
 app.use('/api/courses', courseRoutes);
+app.use('/api/typologies', typologyRoutes);
 
 
-//API that allows to find a specific course by typology
-app.get('/api/courses/type/:courseType', async (req, res)=>{
-    try {
-        const { courseType  } = req.params;
 
-        //courseType must be string
-        if (!courseType || typeof courseType !== 'string') {
-            return res.status(400).json({ message: "Invalid course type." });
-        }
-
-        // Escape special characters in regex
-        const escapedCourseType = courseType.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-
-        // make the search case insensitive
-        const courses = await Course.find({ courseType: { $regex: escapedCourseType, $options: 'i' } });
-        
-        if(courses.length === 0){
-            return res.status(404).json({message: "No courses found."})
-        }
-        res.status(200).json(courses);
-    } catch (error) {
-        res.status(500).json({message: error.message});
-    }
-});
 
 //API that allows to see all the universities
 app.get('/api/university', async (req, res)=>{

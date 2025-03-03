@@ -9,4 +9,4 @@ const typologySchema = new Schema({
 });
 
 
-module.exports = mongoose.model('Typology', TypologySchema); //allow mongoose to use it model in mongo database
+module.exports = mongoose.model('Typology', typologySchema); //allow mongoose to use it model in mongo database
