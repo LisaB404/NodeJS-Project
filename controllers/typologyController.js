@@ -3,8 +3,8 @@ const Course = require('../models/courseModel');
 
 const getAllTypologies = async (req, res) => {
     try {
-        const typologies = await Course.distinct("courseType"); // Estrai solo i tipi unici
-
+        const typologies = await Typology.find();
+        
         if (!typologies || typologies.length === 0) {
             return res.status(404).json({ message: "No typologies found." });
         }
@@ -48,31 +48,31 @@ const addTypology = async (req, res) => {
     }
 }
 
+const updateTypology = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedTypology = await Typology.findByIdAndUpdate(id, req.body, { new: true });
+
+        if(!updatedTypology) {
+            return res.status(404).json({message: "Typology not found."});
+        }
+        
+        res.status(200).json(updatedTypology);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}
+
 const deleteTypology = async (req, res) => {
     try {
-        const { name } = req.params;
-        const typology = await Typology.findOneAndDelete({name: new RegExp('^' + name + '$', 'i')});
+        const { id } = req.params;
+        const typology = await Typology.findByIdAndUpdate(id);
 
         if(!typology) {
             return res.status(404).json({message: "Typology not found."});
         }
         
         res.status(200).json({message: "Typology deleted successfully."});
-    } catch (error) {
-        res.status(500).json({message: error.message});
-    }
-}
-
-const updateTypology = async (req, res) => {
-    try {
-        const { name } = req.params;
-        const updatedTypology = await Typology.findOneAndUpdate({name: new RegExp('^' + name + '$', 'i')}, req.body, {new: true});
-
-        if(!updatedTypology) {
-            return res.status(404).json({message: "Course not found."});
-        }
-        
-        res.status(200).json(updatedTypology);
     } catch (error) {
         res.status(500).json({message: error.message});
     }

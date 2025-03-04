@@ -1,18 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const Typology = require('../models/typologyModel');
 const {getAllTypologies, getTypology, addTypology, deleteTypology, updateTypology} = require('../controllers/typologyController');
 
 //See all typologies
 router.get('/', getAllTypologies);
 //See all the courses of a certain typology
 router.get('/:typology', getTypology);
-//Add a course
+//Add a typology
 router.post('/', addTypology);
-//Update a course
-router.put('/:typology', deleteTypology);
-//Delete a course
-router.delete('/:typology', updateTypology);
+//Update a typology
+router.put('/:id', deleteTypology);
+//Delete a typology
+router.delete('/:id', updateTypology);
 
 
 module.exports = router;

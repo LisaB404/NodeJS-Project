@@ -2,10 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const Course = require('./models/courseModel');
+const Typology = require('./models/typologyModel');
 const University = require('./models/universityModel');
 
 const courseRoutes = require('./routes/courseRoutes');
 const typologyRoutes = require('./routes/typologyRoutes');
+const universityRoutes = require('./routes/universityRoutes');
 
 require('dotenv').config();
 
@@ -19,29 +21,7 @@ app.use(express.json()); //allow to use json
 //Routes
 app.use('/api/courses', courseRoutes);
 app.use('/api/typologies', typologyRoutes);
-
-
-
-
-//API that allows to see all the universities
-app.get('/api/university', async (req, res)=>{
-    try {
-        const universities = await University.find({});
-        res.status(200).json(universities);
-    } catch (error) {
-        res.status(500).json({message: error.message});
-    }
-});
-
-//API that allows to create a new univerity
-app.post('/api/university', async (req, res)=>{
-    try {
-        const university = await University.create(req.body);
-        res.status(201).json(university);
-    } catch (error) {
-        res.status(500).json({message: error.message});
-    }
-});
+app.use('/api/universities', universityRoutes);
 
 
 mongoose.connect(`mongodb+srv://${MONGO_USERNAME}:${MONGO_KEY}@educationdb0.qcvtu.mongodb.net/Node-API?retryWrites=true&w=majority&appName=EducationDB0`)
