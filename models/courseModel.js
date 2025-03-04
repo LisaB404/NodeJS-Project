@@ -17,4 +17,4 @@ const courseSchema = new Schema({
     }]
 });
 
-module.exports = mongoose.model('Course', courseSchema); //allow mongoose to use it model in mongo database
+module.exports = mongoose.model('Course', courseSchema); //allow mongoose to use the model in mongo database

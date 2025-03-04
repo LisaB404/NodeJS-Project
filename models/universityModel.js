@@ -12,4 +12,4 @@ const universitySchema = new Schema({
         }],
 });
 
-module.exports = mongoose.model('University', universitySchema); //allow mongoose to use it model in mongo database
+module.exports = mongoose.model('University', universitySchema);

@@ -1,5 +1,6 @@
 const Typology = require('../models/typologyModel');
 const Course = require('../models/courseModel');
+const mongoose = require('mongoose');
 
 const getAllTypologies = async (req, res) => {
     try {
@@ -19,16 +20,13 @@ const getTypology = async (req, res) => {
     try {
         const { typology } = req.params;
 
-        //courseType must be string
-        if (!typology || typeof typology !== 'string') {
-            return res.status(400).json({ message: "Invalid typology." });
-        }
-
         // Escape special characters in regex
-        const escapedTypology = typology.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const escapedTypology = typology.replace(/[^\w\s]/gi, '');
 
-        // make the search case insensitive
-        const courses = await Course.find({ courseType: { $regex: escapedTypology, $options: 'i' } });
+        // Make the search case insensitive
+        const courses = await Course.find({
+            courseType: { $regex: new RegExp(`^${escapedTypology}$`, 'i') }
+        })
         
         if(courses.length === 0){
             return res.status(404).json({message: "No courses found for this typology."})
@@ -51,6 +49,12 @@ const addTypology = async (req, res) => {
 const updateTypology = async (req, res) => {
     try {
         const { id } = req.params;
+
+        // Check if ID is valid
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid typology ID." });
+        }
+
         const updatedTypology = await Typology.findByIdAndUpdate(id, req.body, { new: true });
 
         if(!updatedTypology) {
@@ -66,7 +70,13 @@ const updateTypology = async (req, res) => {
 const deleteTypology = async (req, res) => {
     try {
         const { id } = req.params;
-        const typology = await Typology.findByIdAndUpdate(id);
+
+        // Check if ID is valid
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid typology ID." });
+        }
+
+        const typology = await Typology.findByIdAndDelete(id);
 
         if(!typology) {
             return res.status(404).json({message: "Typology not found."});

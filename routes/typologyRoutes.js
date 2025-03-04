@@ -9,9 +9,9 @@ router.get('/:typology', getTypology);
 //Add a typology
 router.post('/', addTypology);
 //Update a typology
-router.put('/:id', deleteTypology);
+router.put('/:id', updateTypology);
 //Delete a typology
-router.delete('/:id', updateTypology);
+router.delete('/:id', deleteTypology);
 
 
 module.exports = router;

@@ -1,10 +1,10 @@
 const Course = require('../models/courseModel');
 const University = require('../models/universityModel');
-
+const mongoose = require('mongoose');
 
 const getCourses = async (req, res) => {
 try {
-        const courses = await Course.find({}).populate('universities'); // Popola i dettagli delle università
+        const courses = await Course.find({}).populate('universities');// Add universities details
         res.status(200).json(courses);
     } catch (error) {
         res.status(500).json({message: error.message});
@@ -14,6 +14,12 @@ try {
 const getCourseByName = async (req, res) => {
     try {
         const { name } = req.params;
+
+        // Input validation
+        if (!name || typeof name !== 'string' || name.length < 2) {
+            return res.status(400).json({ message: "Invalid course name." });
+        }
+
         const courses = await Course.find({ name: { $regex: name, $options: 'i' } }); //search any name with the text added
         
         if(courses.length === 0){
@@ -21,27 +27,25 @@ const getCourseByName = async (req, res) => {
         }
         res.status(200).json(courses);
     } catch (error) {
-        res.status(500).json({message: error.message});
-    }
-}
-
-const getCourseByTypology = async (req, res) => {
-    try {
-        const { typology } = req.params;
-        const courses = await Course.find({ courseType: { $regex: typology, $options: 'i' } }); //search any typology with the text added
-        
-        if(courses.length === 0){
-            return res.status(404).json({message: "No courses found for this typology."})
-        }
-        res.status(200).json(courses);
-    } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({message: "Server error."});
     }
 }
 
 const addCourse = async (req, res) => {
     const { name, courseType, universities } = req.body
-    const newCourse = new Course({ name, courseType, universities }) // Crea una nuova istanza del modello di corso con i dati forniti
+
+    //Input validation
+    if (!name || !courseType || !Array.isArray(universities)) {
+        return res.status(400).json({ message: "Invalid input data." });
+    }
+
+    // Check that ID is a valid ObjectId
+    const validUniversities = universities.every(id => mongoose.Types.ObjectId.isValid(id));
+    if (!validUniversities) {
+        return res.status(400).json({ message: "Invalid university ID format." });
+    }
+
+    const newCourse = new Course({ name, courseType, universities })
 
     try {
         const savedCourse = await newCourse.save();
@@ -60,7 +64,13 @@ const addCourse = async (req, res) => {
 const updateCourse = async (req, res) => {
     try {
         const { id } = req.params;
-        const updatedCourse = await Course.findByIdAndUpdate(id, req.body, { new: true }); //{filtro}, dati da aggiornare, {opzione per restituire documenti aggiornato}
+
+        // Check if ID is valid
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid course ID." });
+        }
+
+        const updatedCourse = await Course.findByIdAndUpdate(id, req.body, { new: true });
 
         if(!updatedCourse) {
             return res.status(404).json({message: "Course not found."});
@@ -68,13 +78,19 @@ const updateCourse = async (req, res) => {
         
         res.status(200).json(updatedCourse);
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({message: "Server error."});
     }
 }
 
 const deleteCourse = async (req, res) => {
     try {
         const { id } = req.params;
+
+        // Check if ID is valid
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid course ID." });
+        }
+
         const course = await Course.findByIdAndDelete(id);
 
         if(!course) {
@@ -83,9 +99,9 @@ const deleteCourse = async (req, res) => {
         
         res.status(200).json({message: "Course deleted successfully."});
     } catch (error) {
-        res.status(500).json({message: error.message});
+        res.status(500).json({message: "Server error."});
     }
 }
 
 
-module.exports = {getCourses, getCourseByName, getCourseByTypology, addCourse, deleteCourse, updateCourse};
+module.exports = {getCourses, getCourseByName, addCourse, deleteCourse, updateCourse};
